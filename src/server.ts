@@ -1,6 +1,6 @@
 import bodyParser from "body-parser";
 import { CertificateKeys } from "create-cert";
-import express from "express";
+import {Application, default as express} from "express";
 import { PathParams } from "express-serve-static-core";
 import http from "http";
 import https from "https";
@@ -12,8 +12,8 @@ export interface ServerOptions {
 }
 
 export interface ExpressTestServer extends Pick<
-  express.Application,
-  Exclude<keyof express.Application, "listen" | "close">
+  Application,
+  Exclude<keyof Application, "listen" | "close">
 > {
   (req: Request | http.IncomingMessage, res: Response | http.ServerResponse): any;
 

@@ -1,5 +1,12 @@
-import { CertificateOptions, default as createCert } from "create-cert";
+import createCert from "create-cert";
 import { createServer, ExpressTestServer, ServerOptions } from "./server";
+
+interface CertificateOptions {
+  days?: number;
+  commonName?: string;
+}
+
+export { ExpressTestServer};
 
 export interface TestServerOptions extends ServerOptions {
   certificate?: boolean | string | CertificateOptions;

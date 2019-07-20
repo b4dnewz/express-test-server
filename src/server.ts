@@ -1,11 +1,16 @@
-import bodyParser from "body-parser";
-import { CertificateKeys } from "create-cert";
-import {Application, default as express} from "express";
+import * as bodyParser from "body-parser";
+import { Application, default as express } from "express";
 import { PathParams } from "express-serve-static-core";
-import http from "http";
-import https from "https";
+import * as http from "http";
+import * as https from "https";
 import { AddressInfo } from "net";
 import { promisify } from "util";
+
+interface CertificateKeys {
+  key: string;
+  cert: string;
+  caCert: string;
+}
 
 export interface ServerOptions {
   bodyParser?: boolean | bodyParser.Options;

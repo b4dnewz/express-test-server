@@ -35,7 +35,7 @@ describe("Express Test Server", () => {
       expect(typeof server.close === "function").toBeTruthy();
     });
 
-    it("wxpose raw http server", () => {
+    it("expose raw http server", () => {
       expect(server.http.listening).toBeTruthy();
     });
 
@@ -239,6 +239,13 @@ describe("Express Test Server", () => {
   });
 
   describe("options", () => {
+    it("if listen is false it wont start the server", async () => {
+      const server = await createTestServer({
+        listen: false,
+      });
+      expect(server.http.listening).toBeFalsy();
+    });
+
     it("if certificate is falsy server wont create ssl", async () => {
       const server = await createTestServer({
         certificate: false,

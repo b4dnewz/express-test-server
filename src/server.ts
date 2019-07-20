@@ -9,6 +9,7 @@ import { promisify } from "util";
 
 export interface ServerOptions {
   bodyParser?: boolean | bodyParser.Options;
+  listen?: boolean;
 }
 
 export interface ExpressTestServer extends Pick<
@@ -42,6 +43,7 @@ const send = (fn?: any) => {
   };
 };
 
+// List of application methods to override
 const methods = [
   "get",
   "post",
@@ -52,6 +54,11 @@ const methods = [
 
 export function createServer(keys: null | CertificateKeys, options: ServerOptions): Promise<ExpressTestServer> {
 
+  options = {
+    listen: true,
+    ...options,
+  };
+
   const server: ExpressTestServer = express() as any;
   server.http = http.createServer(server);
 
@@ -61,7 +68,7 @@ export function createServer(keys: null | CertificateKeys, options: ServerOption
     server.caCert = keys.caCert;
   }
 
-  // Disable caching
+  // Disable requests caching
   server.disable("etag");
 
   // Setup application body parsers
@@ -142,6 +149,10 @@ export function createServer(keys: null | CertificateKeys, options: ServerOption
     }
     return Promise.all(promises);
   };
+
+  if (!options.listen) {
+    return Promise.resolve(server);
+  }
 
   return server.listen().then(() => server);
 

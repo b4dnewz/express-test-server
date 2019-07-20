@@ -5,6 +5,9 @@
   "homepage": "https://github.com/b4dnewz/express-test-server",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "pretest": "npm run lint",
     "prebuild": "npm run test",

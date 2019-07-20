@@ -45,5 +45,8 @@
   "dependencies": {
     "create-cert": "^1.0.6",
     "express": "^4.x"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

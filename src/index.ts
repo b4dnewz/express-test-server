@@ -13,7 +13,6 @@ export interface TestServerOptions extends ServerOptions {
 }
 
 export default function(opts: TestServerOptions = {
-  bodyParser: true,
   certificate: false,
 }): Promise<ExpressTestServer> {
   if (!opts.certificate) {

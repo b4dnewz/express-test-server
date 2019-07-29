@@ -66,6 +66,7 @@ const methods = [
 export function createServer(keys: null | CertificateKeys, options: ServerOptions): Promise<ExpressTestServer> {
 
   options = {
+    bodyParser: true,
     listen: true,
     ...options,
   };

@@ -1,6 +1,6 @@
 {
   "name": "@b4dnewz/express-test-server",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A minimal but customizable Express server for testing",
   "homepage": "https://github.com/b4dnewz/express-test-server",
   "main": "./lib/index.js",

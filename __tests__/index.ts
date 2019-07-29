@@ -1,5 +1,5 @@
-// @ts-ignore
-import got from "got";
+import getPort = require("get-port");
+import got = require("got");
 import * as querystring from "querystring";
 import createTestServer from "../src";
 
@@ -239,6 +239,26 @@ describe("Express Test Server", () => {
   });
 
   describe("options", () => {
+    it("if port is specified it will use it", async () => {
+      const port = await getPort();
+      const server = await createTestServer({
+        port,
+      });
+      expect(server.http.listening).toBeTruthy();
+      expect(server.port).toBe(port);
+      await server.close();
+    });
+
+    it("if hostname is specified it will use it", async () => {
+      const hostname = "127.0.0.1";
+      const server = await createTestServer({
+        hostname,
+      });
+      expect(server.http.listening).toBeTruthy();
+      expect(server.url).toContain(hostname);
+      await server.close();
+    });
+
     it("if listen is false it wont start the server", async () => {
       const server = await createTestServer({
         listen: false,

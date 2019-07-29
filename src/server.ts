@@ -12,7 +12,13 @@ interface CertificateKeys {
   caCert: string;
 }
 
-export interface ServerOptions {
+interface ListenOptions {
+  hostname?: string;
+  port?: number;
+  sslPort?: number;
+}
+
+export interface ServerOptions extends ListenOptions {
   bodyParser?: boolean | bodyParser.Options;
   listen?: boolean;
 }
@@ -31,7 +37,7 @@ export interface ExpressTestServer extends Pick<
   sslPort?: number;
   sslUrl?: string;
 
-  listen(): Promise<void[]>;
+  listen(opts: ListenOptions): Promise<void[]>;
   close(): Promise<void[]>;
 }
 
@@ -118,18 +124,25 @@ export function createServer(keys: null | CertificateKeys, options: ServerOption
   });
 
   // Override listen method
-  server.listen = () => {
+  server.listen = ({hostname, port, sslPort} = {}) => {
+    hostname = hostname || "localhost";
     const promises = [
-      promisify(server.http.listen.bind(server.http))().then(() => {
+      promisify(server.http.listen.bind(server.http))(
+        port,
+        hostname,
+      ).then(() => {
         server.port = (server.http.address() as AddressInfo).port;
-        server.url = `http://localhost:${server.port}`;
+        server.url = `http://${hostname}:${server.port}`;
       }),
     ];
     if (server.https) {
       promises.push(
-        promisify(server.https.listen.bind(server.https))().then(() => {
+        promisify(server.https.listen.bind(server.https))(
+          sslPort,
+          hostname,
+        ).then(() => {
           server.sslPort = (server.https.address() as AddressInfo).port;
-          server.sslUrl = `https://localhost:${server.sslPort}`;
+          server.sslUrl = `https://${hostname}:${server.sslPort}`;
         }),
       );
     }
@@ -159,6 +172,6 @@ export function createServer(keys: null | CertificateKeys, options: ServerOption
     return Promise.resolve(server);
   }
 
-  return server.listen().then(() => server);
+  return server.listen(options).then(() => server);
 
 }

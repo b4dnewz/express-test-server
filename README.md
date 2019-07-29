@@ -60,6 +60,53 @@ it("respond to get requests", async () => {
 })
 ```
 
+## Options
+
+__port__ (default 0)  
+Specify a custom port for the HTTP server instance, otherwise it will automatically choose a random free TCP port
+
+```js
+await createServer({
+  port: 8888
+})
+```
+
+__sslPort__ (default _443_)  
+Specify a custom port for the HTTPS server instance, otherwise it will try to default ssl port
+
+```js
+await createServer({
+  sslPort: 4443
+})
+```
+
+__hostname__ (default _localhost_)  
+Specify a custom hostname for both HTTP and HTTPS servers, remember that you need a resolvable DNS host name for this to work.
+
+```js
+await createServer({
+  hostname: "0.0.0.0"
+})
+
+await createServer({
+  hostname: "test.example.com"
+})
+```
+
+__listen__ (default _true_)  
+If false will prevent the test server to automatically start to listen for requests when instanciated.
+
+```js
+const server = await createServer({
+  listen: false
+})
+
+// listen later on a desired port
+await server.listen({
+  port: 8888
+})
+```
+
 ## License
 
 MIT

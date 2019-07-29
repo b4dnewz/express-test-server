@@ -2,6 +2,8 @@
 
 > A minimal but customizable Express server for testing
 
+[![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url] [![Coverage percentage][coveralls-image]][coveralls-url]
+
 Typescript based preconfigured Express application intended for quick testing requests and responses, it can can be customized to listen for HTTP and HTTPS traffic and alter the default body parser behavior.
 
 The following `Content-Type` headers will be parsed and exposed via `req.body`:
@@ -110,3 +112,12 @@ await server.listen({
 ## License
 
 MIT
+
+[npm-image]: https://badge.fury.io/js/%40b4dnewz%2Fexpress-test-server.svg
+[npm-url]: https://npmjs.org/package/@b4dnewz/express-test-server
+[travis-image]: https://travis-ci.org/b4dnewz/express-test-server.svg?branch=master
+[travis-url]: https://travis-ci.org/b4dnewz/express-test-server
+[daviddm-image]: https://david-dm.org/b4dnewz/express-test-server.svg?theme=shields.io
+[daviddm-url]: https://david-dm.org/b4dnewz/express-test-server
+[coveralls-image]: https://coveralls.io/repos/b4dnewz/express-test-server/badge.svg
+[coveralls-url]: https://coveralls.io/r/b4dnewz/express-test-server

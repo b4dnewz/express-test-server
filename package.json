@@ -11,7 +11,7 @@
   "scripts": {
     "pretest": "npm run lint",
     "prebuild": "npm run test",
-    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build",
     "test": "jest",
     "test:cover": "jest --coverage",
     "lint": "tslint --fix -p .",

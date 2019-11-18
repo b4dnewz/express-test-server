@@ -1,8 +1,8 @@
-import * as bodyParser from "body-parser";
-import { Application, default as express } from "express";
-import { PathParams } from "express-serve-static-core";
-import * as http from "http";
-import * as https from "https";
+import bodyParser from "body-parser";
+import express from "express";
+import { Application, PathParams, RequestHandler } from "express-serve-static-core";
+import http from "http";
+import https from "https";
 import { AddressInfo } from "net";
 import { promisify } from "util";
 
@@ -19,14 +19,22 @@ interface ListenOptions {
 }
 
 export interface ServerOptions extends ListenOptions {
+type AnyJson = boolean | number | string | null | JsonArray | JsonMap;
+interface JsonMap { [key: string]: AnyJson; }
+interface JsonArray extends Array<AnyJson> { }
+
+type OverriddenMethods = "get" | "post" | "put" | "patch" | "delete" | "listen";
+
+type Express = Pick<Application, Exclude<keyof Application, OverriddenMethods>>;
+
+export type Handler = AnyJson | Promise<AnyJson> | RequestHandler;
+
+export interface ServerOptions {
   bodyParser?: boolean | bodyParser.Options;
   listen?: boolean;
 }
 
-export interface ExpressTestServer extends Pick<
-  Application,
-  Exclude<keyof Application, "listen" | "close">
-> {
+export interface ExpressTestServer extends Express {
   (req: Request | http.IncomingMessage, res: Response | http.ServerResponse): any;
 
   http: http.Server;
@@ -37,7 +45,13 @@ export interface ExpressTestServer extends Pick<
   sslPort?: number;
   sslUrl?: string;
 
-  listen(opts: ListenOptions): Promise<void[]>;
+  get(path: PathParams, ...handler: Handler[]);
+  post(path: PathParams, ...handler: Handler[]);
+  put(path: PathParams, ...handler: Handler[]);
+  patch(path: PathParams, ...handler: Handler[]);
+  delete(path: PathParams, ...handler: Handler[]);
+
+  listen(): Promise<void[]>;
   close(): Promise<void[]>;
 }
 
@@ -117,7 +131,7 @@ export function createServer(keys: null | CertificateKeys, options: ServerOption
   // Rewrite application routing methods
   methods.forEach((method) => {
     const fn = server[method].bind(server);
-    server[method] = (path: PathParams, ...handlers: any[]) => {
+    server[method] = (path: PathParams, ...handlers: Handler[]) => {
       for (const handler of handlers) {
         fn(path, send(handler));
       }

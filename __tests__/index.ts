@@ -1,7 +1,7 @@
 import getPort = require("get-port");
 import got = require("got");
 import * as querystring from "querystring";
-import createTestServer from "../src";
+import createTestServer, { ExpressTestServer } from "../src";
 
 describe("Express Test Server", () => {
 
@@ -18,7 +18,7 @@ describe("Express Test Server", () => {
   });
 
   describe("execution", () => {
-    let server;
+    let server: ExpressTestServer;
 
     beforeAll(async () => {
       server = await createTestServer();
@@ -170,7 +170,7 @@ describe("Express Test Server", () => {
         next();
       }, (req, res) => res.get("foo"));
 
-      const { body } = await got(server.url + "/foo", {method: "POST"});
+      const { body } = await got(server.url + "/foo", { method: "POST" });
       expect(body).toEqual("bar");
     });
 
@@ -180,7 +180,7 @@ describe("Express Test Server", () => {
         next();
       }, (req, res) => res.get("foo"));
 
-      const { body } = await got(server.url + "/foo", {method: "PUT"});
+      const { body } = await got(server.url + "/foo", { method: "PUT" });
       expect(body).toEqual("bar");
     });
 
@@ -190,7 +190,7 @@ describe("Express Test Server", () => {
         next();
       }, (req, res) => res.get("foo"));
 
-      const { body } = await got(server.url + "/foo", {method: "PATCH"});
+      const { body } = await got(server.url + "/foo", { method: "PATCH" });
       expect(body).toEqual("bar");
     });
 
@@ -200,7 +200,7 @@ describe("Express Test Server", () => {
         next();
       }, (req, res) => res.get("foo"));
 
-      const { body } = await got(server.url + "/foo", {method: "DELETE"});
+      const { body } = await got(server.url + "/foo", { method: "DELETE" });
       expect(body).toEqual("bar");
     });
   });

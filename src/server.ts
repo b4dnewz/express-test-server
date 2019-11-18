@@ -5,20 +5,8 @@ import http from "http";
 import https from "https";
 import { AddressInfo } from "net";
 import { promisify } from "util";
+import send from "./send";
 
-interface CertificateKeys {
-  key: string;
-  cert: string;
-  caCert: string;
-}
-
-interface ListenOptions {
-  hostname?: string;
-  port?: number;
-  sslPort?: number;
-}
-
-export interface ServerOptions extends ListenOptions {
 type AnyJson = boolean | number | string | null | JsonArray | JsonMap;
 interface JsonMap { [key: string]: AnyJson; }
 interface JsonArray extends Array<AnyJson> { }
@@ -29,7 +17,19 @@ type Express = Pick<Application, Exclude<keyof Application, OverriddenMethods>>;
 
 export type Handler = AnyJson | Promise<AnyJson> | RequestHandler;
 
-export interface ServerOptions {
+export interface CertificateKeys {
+  key: string;
+  cert: string;
+  caCert: string;
+}
+
+export interface ListenOptions {
+  hostname?: string;
+  port?: number;
+  sslPort?: number;
+}
+
+export interface ServerOptions extends ListenOptions {
   bodyParser?: boolean | bodyParser.Options;
   listen?: boolean;
 }
@@ -51,22 +51,9 @@ export interface ExpressTestServer extends Express {
   patch(path: PathParams, ...handler: Handler[]);
   delete(path: PathParams, ...handler: Handler[]);
 
-  listen(): Promise<void[]>;
+  listen(opts?: ListenOptions): Promise<void[]>;
   close(): Promise<void[]>;
 }
-
-// Custom send method that optionally call user defined handler
-const send = (fn?: any) => {
-  return (req, res, next) => {
-    const cb = typeof fn === "function" ? fn(req, res, next) : fn;
-
-    Promise.resolve(cb).then((val) => {
-      if (val) {
-        res.send(val);
-      }
-    });
-  };
-};
 
 // List of application methods to override
 const methods = [
@@ -139,7 +126,7 @@ export function createServer(keys: null | CertificateKeys, options: ServerOption
   });
 
   // Override listen method
-  server.listen = ({hostname, port, sslPort} = {}) => {
+  server.listen = ({ hostname, port, sslPort } = {}) => {
     hostname = hostname || "localhost";
     const promises = [
       promisify(server.http.listen.bind(server.http))(

@@ -5,6 +5,8 @@ import http from "http";
 import https from "https";
 import { AddressInfo } from "net";
 import { promisify } from "util";
+
+import destroy from "./destroy";
 import send from "./send";
 
 type AnyJson = boolean | number | string | null | JsonArray | JsonMap;
@@ -74,11 +76,13 @@ export function createServer(keys: null | CertificateKeys, options: ServerOption
 
   const server: ExpressTestServer = express() as any;
   server.http = http.createServer(server);
+  server.http.close = destroy(server.http);
 
   // Setup https server
   if (keys) {
     server.https = https.createServer(keys, server);
     server.caCert = keys.caCert;
+    server.https.close = destroy(server.https);
   }
 
   // Disable requests caching
@@ -154,14 +158,14 @@ export function createServer(keys: null | CertificateKeys, options: ServerOption
   // Override server close method
   server.close = () => {
     const promises = [
-      promisify(server.http.close.bind(server.http))().then(() => {
+      promisify(server.http.close)().then(() => {
         server.port = undefined;
         server.url = undefined;
       }),
     ];
     if (server.https) {
       promises.push(
-        promisify(server.https.close.bind(server.https))().then(() => {
+        promisify(server.https.close)().then(() => {
           server.sslPort = undefined;
           server.sslUrl = undefined;
         }),
